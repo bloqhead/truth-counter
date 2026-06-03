@@ -367,7 +367,7 @@
     <div class="header-right">
       <div class="big-num">{{ totalFormatted }}</div>
       <div class="big-label">Estimated Total Posts</div>
-      <div class="updated-badge" v-if="data">Updated {{ data.updatedAt }}</div>
+      <div class="updated-badge" v-if="data">Data updated {{ formatDate(data.updatedAt) }}</div>
     </div>
   </header>
 
@@ -458,6 +458,13 @@ createApp({
     const shown = ref(false);
     const currentYear = new Date().getFullYear();
 
+    function formatDate(str) {
+      if (!str) return '';
+      const [y, m, d] = str.split('-');
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      return `${months[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+    }
+
     onMounted(async () => {
       const res = await fetch('./data.json');
       data.value = await res.json();
@@ -543,6 +550,7 @@ createApp({
       yearData, records, sources,
       total, totalFormatted, maxPosts, barHeight,
       avgStats, tickerItems, contextItems,
+      formatDate,
     };
   }
 }).mount('#app');
