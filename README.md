@@ -1,72 +1,32 @@
 # Truth Counter
 
-A live dashboard tracking Trump's Truth Social post count, powered by Node/Express + Vue 3.
+A static dashboard tracking Trump's Truth Social post count. No backend, no scraping — just a well-sourced JSON file and a Vue 3 frontend served via GitHub Pages.
 
-## How It Works
+**Live site:** https://bloqhead.github.io/truth-counter
 
-Truth Social is built on Mastodon, which exposes a standard public REST API. The server hits the `/api/v1/accounts/lookup` endpoint to get Trump's account data, which includes `statuses_count` — the total number of posts. No scraping, no auth needed.
+## How to update the data
 
-**Refresh schedule:** Every 6 hours via node-cron (00:00, 06:00, 12:00, 18:00). Results are cached to `cache.json` so the server never hits Truth Social on every page load.
+Edit `public/data.json`. That's it. Push to `main` and GitHub Actions redeploys in ~30 seconds.
 
-## Setup
-
-```bash
-npm install
-npm start
-# → http://localhost:3000
-```
-
-For development with auto-reload:
-```bash
-npm run dev
-```
-
-## Endpoints
-
-| Route | Description |
-|-------|-------------|
-| `GET /` | Vue frontend |
-| `GET /api/stats` | Cached stats (auto-refreshes if >6h old) |
-| `GET /api/stats?refresh=true` | Force a fresh fetch |
-| `GET /api/refresh` | Trigger a background refresh |
-
-## Deployment (DigitalOcean / your existing setup)
-
-Since you're already running Node on DO, just:
-
-```bash
-# Clone/copy project to your server
-npm install --production
-
-# Run with PM2 (recommended)
-npm install -g pm2
-pm2 start server.js --name truth-counter
-pm2 save
-pm2 startup
-```
-
-Then proxy via Caddy (you're already using it for guillotine.club):
-
-```
-truth.yourdomain.com {
-  reverse_proxy localhost:3000
+```json
+{
+  "updatedAt": "2026-06-03",
+  "yearData": [
+    { "year": 2026, "posts": 2700, "estimated": true, "note": "Source note here" }
+  ]
 }
 ```
 
-## Data Notes
+Set `"estimated": false` for a year when you have a confirmed full-year count.
 
-- **Live total**: pulled directly from Truth Social's Mastodon API (`statuses_count`)
-- **Per-year breakdown**: 2022–2024 are estimated from cross-referenced reporting (Roll Call, Washington Post, AFP, WCVB). The current year is derived as `live total − historical sum`.
-- **Historical baselines used**: 2022 ≈ 2,800 | 2023 ≈ 7,400 | 2024 ≈ 8,760
+## Sources to check periodically
 
-## Project Structure
+- Roll Call, Washington Post, AFP, NPR — all publish periodic Trump posting analyses
+- Financial Times — published a detailed 2026 breakdown in May 2026
+- WCVB/Get the Facts — published confirmed 2025 full-year count (6,168 posts)
 
-```
-truth-counter/
-├── server.js        # Express server, API, cron, cache
-├── cache.json       # Auto-generated on first run
-├── package.json
-├── public/
-│   └── index.html   # Vue 3 frontend (CDN, no build step)
-└── README.md
-```
+## Stack
+
+- Vue 3 (CDN, no build step)
+- GitHub Pages (free)
+- `public/data.json` — manually updated source of truth
