@@ -386,6 +386,9 @@
       <div class="section-label">Posts by Year</div>
       <div class="bar-chart">
         <div class="bar-col" v-for="yr in yearData" :key="yr.year">
+          <div class="bar-sub" v-if="yr.partial">
+            <em>YTD</em> · ~{{ yr.projectedTotal?.toLocaleString() }} proj.
+          </div>
           <div class="bar-count">{{ yr.posts.toLocaleString() }}</div>
           <div
             class="bar-fill"
@@ -397,9 +400,6 @@
             :style="{ height: barHeight(yr.posts) }"
           ></div>
           <div class="bar-year">{{ yr.year }}</div>
-          <div class="bar-sub" v-if="yr.partial">
-            <em>YTD</em> · ~{{ yr.projectedTotal?.toLocaleString() }} proj.
-          </div>
         </div>
       </div>
       <div class="chart-axis"></div>
