@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Truth Counter — Tracking Trump's Truth Social Posts</title>
+  <title>Truth Counter -- Tracking Trump's Truth Social Posts</title>
   <meta name="description" content="How many times has Trump posted to Truth Social? A running tally of posts, averages, and records since February 2022." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;700&display=swap" rel="stylesheet">
@@ -49,11 +49,21 @@
       font-weight: 700;
       letter-spacing: 0.12em;
       color: white;
-      padding: 0 40px;
+      padding: 0 0 0 48px;
       text-transform: uppercase;
       flex-shrink: 0;
     }
-    .ticker-inner span::after { content: '◆'; margin-left: 40px; opacity: 0.5; }
+    .ticker-inner span::after {
+      content: '';
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: white;
+      opacity: 0.4;
+      margin-left: 48px;
+      vertical-align: middle;
+      transform: rotate(45deg);
+    }
     @keyframes ticker {
       0% { transform: translateX(0); }
       100% { transform: translateX(-50%); }
@@ -329,7 +339,7 @@
       position: relative;
     }
     .sources-list li::before {
-      content: '—';
+      content: '--';
       position: absolute;
       left: 0;
     }
@@ -358,21 +368,21 @@
 <div class="ticker-wrap">
   <div class="ticker-inner">
       <span>27,000+ total posts since Feb 2022</span>
-      <span>May 2026: 861 posts — 27/day, a new record pace</span>
-      <span>1 post every 53 minutes — including while he sleeps</span>
-      <span>55 posts in 3 hours (May 11–12, 2026)</span>
+      <span>May 2026: 861 posts -- 27/day, a new record pace</span>
+      <span>1 post every 53 minutes -- including while he sleeps</span>
+      <span>55 posts in 3 hours (May 11-12, 2026)</span>
       <span>48 posts in 36 minutes (Jan 29, 2026)</span>
       <span>160+ posts in a single evening (Dec 1, 2025)</span>
-      <span>3× his tweet rate from his first term</span>
-      <span>Truth Social is the White House’s primary communication channel</span>
+      <span>3x his tweet rate from his first term</span>
+      <span>Truth Social is the White House's primary communication channel</span>
       <span>27,000+ total posts since Feb 2022</span>
-      <span>May 2026: 861 posts — 27/day, a new record pace</span>
-      <span>1 post every 53 minutes — including while he sleeps</span>
-      <span>55 posts in 3 hours (May 11–12, 2026)</span>
+      <span>May 2026: 861 posts -- 27/day, a new record pace</span>
+      <span>1 post every 53 minutes -- including while he sleeps</span>
+      <span>55 posts in 3 hours (May 11-12, 2026)</span>
       <span>48 posts in 36 minutes (Jan 29, 2026)</span>
       <span>160+ posts in a single evening (Dec 1, 2025)</span>
-      <span>3× his tweet rate from his first term</span>
-      <span>Truth Social is the White House’s primary communication channel</span>
+      <span>3x his tweet rate from his first term</span>
+      <span>Truth Social is the White House's primary communication channel</span>
   </div>
 </div>
 
@@ -381,7 +391,7 @@
   <header>
     <div class="header-title">
       <h1>TRUTH<br><em>COUNTER</em></h1>
-      <div class="header-sub">@realDonaldTrump · Truth Social · Feb 21, 2022 — Present</div>
+      <div class="header-sub">@realDonaldTrump · Truth Social · Feb 21, 2022 -- Present</div>
     </div>
     <div class="header-right">
       <div class="big-num">{{ totalFormatted }}</div>
@@ -498,7 +508,7 @@ createApp({
       yearData.value.reduce((s, y) => s + y.posts, 0)
     );
     const totalFormatted = computed(() =>
-      total.value ? total.value.toLocaleString() + '+' : '—'
+      total.value ? total.value.toLocaleString() + '+' : '--'
     );
 
     const maxPosts = computed(() => {
@@ -528,7 +538,7 @@ createApp({
       const dayOfYear = Math.floor((now - new Date(currentYear, 0, 1)) / 86400000);
       const thisYearAvg = currentYr && dayOfYear > 0
         ? (currentYr.posts / dayOfYear).toFixed(1)
-        : '—';
+        : '--';
 
       return [
         { value: perDay,        label: 'Avg Posts / Day',        accent: true,  context: `Since launch ${data.value.launchDate}` },
@@ -544,12 +554,12 @@ createApp({
     // before data.json has finished fetching.
     const tickerItems = [
       '27,000+ total posts since Feb 2022',
-      'May 2026: 861 posts — 27/day, a new record pace',
-      '1 post every 53 minutes — including while he sleeps',
-      '55 posts in 3 hours (May 11–12, 2026)',
+      'May 2026: 861 posts -- 27/day, a new record pace',
+      '1 post every 53 minutes -- including while he sleeps',
+      '55 posts in 3 hours (May 11-12, 2026)',
       '48 posts in 36 minutes (Jan 29, 2026)',
       '160+ posts in a single evening (Dec 1, 2025)',
-      '3× his tweet rate from his first term',
+      '3x his tweet rate from his first term',
       'Truth Social is the White House\'s primary communication channel',
     ];
 
