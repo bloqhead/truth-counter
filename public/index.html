@@ -202,7 +202,7 @@
     .bar-fill.estimated { background: #5a6170; opacity: 0.7; }
     .bar-fill.confirmed { background: var(--navy); opacity: 1; }
     .bar-fill.partial { background: var(--red); opacity: 1; }
-    .bar-fill { position: relative; z-index: 1; width: 100%; }
+    .bar-fill { width: 100%; }
     .bar-fill:hover { background: var(--red) !important; opacity: 1 !important; }
     .bar-fill::after {
       content: '';
@@ -212,23 +212,18 @@
       background: var(--gold);
       opacity: 0.6;
     }
-    /* Projected ghost bar sits behind the real bar */
+    /* Projected ghost bar: wrapper is full projected height,
+       real bar sits at bottom via margin-top: auto */
     .bar-wrap {
       width: 100%;
-      position: relative;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: flex-end;
+      border-radius: 0;
+      overflow: visible;
     }
-    .bar-projected {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--red);
-      opacity: 0.18;
-      transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-      z-index: 0;
+    .bar-wrap.has-projection {
+      background: rgba(232, 25, 44, 0.15);
     }
     .bar-year {
       font-family: 'Bebas Neue', sans-serif;
@@ -414,13 +409,12 @@
             {{ yr.posts.toLocaleString() }}
             <span v-if="yr.partial" style="color:var(--red);font-size:9px"> YTD</span>
           </div>
-          <div class="bar-wrap" :style="{ height: maxBarHeight }">
-            <!-- ghost projected bar for partial years -->
-            <div
-              v-if="yr.partial && yr.projectedTotal"
-              class="bar-projected"
-              :style="{ height: barHeight(yr.projectedTotal) }"
-            ></div>
+          <!-- wrapper is sized to projected height so real bar anchors to bottom -->
+          <div
+            class="bar-wrap"
+            :class="{ 'has-projection': yr.partial && yr.projectedTotal }"
+            :style="{ height: yr.partial && yr.projectedTotal ? barHeight(yr.projectedTotal) : barHeight(yr.posts) }"
+          >
             <div
               class="bar-fill"
               :class="{
