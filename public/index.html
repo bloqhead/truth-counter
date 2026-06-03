@@ -355,14 +355,28 @@
   </style>
 </head>
 <body>
-<div id="app" v-cloak>
-
-  <div class="ticker-wrap">
-    <div class="ticker-inner">
-      <span v-for="item in tickerItems" :key="item">{{ item }}</span>
-      <span v-for="item in tickerItems" :key="'b-'+item">{{ item }}</span>
-    </div>
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+      <span>27,000+ total posts since Feb 2022</span>
+      <span>May 2026: 861 posts — 27/day, a new record pace</span>
+      <span>1 post every 53 minutes — including while he sleeps</span>
+      <span>55 posts in 3 hours (May 11–12, 2026)</span>
+      <span>48 posts in 36 minutes (Jan 29, 2026)</span>
+      <span>160+ posts in a single evening (Dec 1, 2025)</span>
+      <span>3× his tweet rate from his first term</span>
+      <span>Truth Social is the White House’s primary communication channel</span>
+      <span>27,000+ total posts since Feb 2022</span>
+      <span>May 2026: 861 posts — 27/day, a new record pace</span>
+      <span>1 post every 53 minutes — including while he sleeps</span>
+      <span>55 posts in 3 hours (May 11–12, 2026)</span>
+      <span>48 posts in 36 minutes (Jan 29, 2026)</span>
+      <span>160+ posts in a single evening (Dec 1, 2025)</span>
+      <span>3× his tweet rate from his first term</span>
+      <span>Truth Social is the White House’s primary communication channel</span>
   </div>
+</div>
+
+<div id="app" v-cloak>
 
   <header>
     <div class="header-title">
@@ -526,23 +540,18 @@ createApp({
       ];
     });
 
-    const tickerItems = computed(() => {
-      if (!data.value) return [];
-      const launch = new Date(data.value.launchDate);
-      const days = Math.floor((new Date() - launch) / 86400000);
-      const perDay = (total.value / days).toFixed(0);
-      const minPer = Math.round((days * 24 * 60) / total.value);
-      return [
-        `${total.value.toLocaleString()}+ total posts since Feb 2022`,
-        `${perDay} posts per day on average`,
-        `1 post every ${minPer} minutes — including while he sleeps`,
-        'Most active month: January 2024 — 1,364 posts',
-        '160+ posts in a single evening (Dec 1, 2025)',
-        '3× his tweet rate from his first term',
-        'Truth Social is the White House\'s primary communication channel',
-        '19 posts/day average in 2026 — Financial Times',
-      ];
-    });
+    // Static so the ticker renders and animates immediately on load,
+    // before data.json has finished fetching.
+    const tickerItems = [
+      '27,000+ total posts since Feb 2022',
+      'May 2026: 861 posts — 27/day, a new record pace',
+      '1 post every 53 minutes — including while he sleeps',
+      '55 posts in 3 hours (May 11–12, 2026)',
+      '48 posts in 36 minutes (Jan 29, 2026)',
+      '160+ posts in a single evening (Dec 1, 2025)',
+      '3× his tweet rate from his first term',
+      'Truth Social is the White House\'s primary communication channel',
+    ];
 
     const contextItems = [
       { value: '3<span>×</span>', label: 'His first-term tweet rate (same period)' },
