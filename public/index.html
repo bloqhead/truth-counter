@@ -199,8 +199,9 @@
       position: relative;
       transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .bar-fill.estimated { opacity: 0.65; }
-    .bar-fill.current { background: var(--red); opacity: 1; }
+    .bar-fill.estimated { background: #5a6170; opacity: 0.7; }
+    .bar-fill.confirmed { background: var(--navy); opacity: 1; }
+    .bar-fill.partial { background: var(--red); opacity: 1; }
     .bar-fill:hover { background: var(--red) !important; opacity: 1 !important; }
     .bar-fill::after {
       content: '';
@@ -210,10 +211,41 @@
       background: var(--gold);
       opacity: 0.6;
     }
+    /* Projected ghost bar sits behind the real bar */
+    .bar-wrap {
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+    }
+    .bar-projected {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: var(--red);
+      opacity: 0.18;
+      transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
     .bar-year {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 18px;
       color: var(--ink);
+    }
+    .bar-ytd {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.12em;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-top: -2px;
+    }
+    .bar-projected-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-top: 2px;
+      white-space: nowrap;
     }
     .chart-axis { border-top: 2px solid var(--ink); }
     .chart-legend {
@@ -372,22 +404,40 @@
       <div class="section-label">Posts by Year</div>
       <div class="bar-chart">
         <div class="bar-col" v-for="yr in yearData" :key="yr.year">
-          <div class="bar-count">{{ yr.posts.toLocaleString() }}</div>
-          <div
-            class="bar-fill"
-            :class="{
-              estimated: yr.estimated,
-              current: yr.year === currentYear
-            }"
-            :style="{ height: barHeight(yr.posts) }"
-          ></div>
+          <div class="bar-count">
+            {{ yr.posts.toLocaleString() }}
+            <span v-if="yr.partial" style="color:var(--red);font-size:9px"> YTD</span>
+          </div>
+          <div class="bar-wrap" :style="{ height: maxBarHeight }">
+            <!-- ghost projected bar for partial years -->
+            <div
+              v-if="yr.partial && yr.projectedTotal"
+              class="bar-projected"
+              :style="{ height: barHeight(yr.projectedTotal) }"
+            ></div>
+            <div
+              class="bar-fill"
+              :class="{
+                estimated: yr.estimated && !yr.partial,
+                confirmed: !yr.estimated && !yr.partial,
+                partial:   yr.partial
+              }"
+              :style="{ height: barHeight(yr.posts), position: 'relative', zIndex: 1 }"
+            ></div>
+          </div>
           <div class="bar-year">{{ yr.year }}</div>
+          <div class="bar-ytd" v-if="yr.partial">YTD</div>
+          <div class="bar-projected-label" v-if="yr.partial && yr.projectedTotal">
+            ~{{ yr.projectedTotal.toLocaleString() }} projected
+          </div>
         </div>
       </div>
       <div class="chart-axis"></div>
       <div class="chart-legend">
-        <span><span class="legend-dot" style="background:var(--red)"></span> Confirmed / current year</span>
-        <span><span class="legend-dot" style="background:var(--navy);opacity:0.65"></span> Estimated from reported averages</span>
+        <span><span class="legend-dot" style="background:var(--navy)"></span> Confirmed full year</span>
+        <span><span class="legend-dot" style="background:#5a6170;opacity:0.7"></span> Estimated from reported averages</span>
+        <span><span class="legend-dot" style="background:var(--red)"></span> Year-to-date (partial year)</span>
+        <span><span class="legend-dot" style="background:var(--red);opacity:0.18"></span> Projected full-year pace</span>
       </div>
     </div>
 
@@ -456,9 +506,14 @@ createApp({
       total.value ? total.value.toLocaleString() + '+' : '—'
     );
 
-    const maxPosts = computed(() =>
-      Math.max(...yearData.value.map(y => y.posts), 1)
-    );
+    const maxPosts = computed(() => {
+      // Use projected total for partial years so the ghost bar scales correctly
+      const vals = yearData.value.map(y =>
+        y.partial && y.projectedTotal ? y.projectedTotal : y.posts
+      );
+      return Math.max(...vals, 1);
+    });
+    const maxBarHeight = computed(() => '160px');
     const barHeight = (posts) =>
       `${Math.round((posts / maxPosts.value) * 160)}px`;
 
@@ -517,7 +572,7 @@ createApp({
     return {
       data, shown, currentYear,
       yearData, records, sources,
-      total, totalFormatted, maxPosts, barHeight,
+      total, totalFormatted, maxPosts, maxBarHeight, barHeight,
       avgStats, tickerItems, contextItems,
     };
   }

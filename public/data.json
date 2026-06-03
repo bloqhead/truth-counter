@@ -10,36 +10,65 @@
   ],
   "launchDate": "2022-02-21",
   "yearData": [
-    { "year": 2022, "posts": 2800,  "estimated": true,  "note": "Partial year (launched Feb 21). ~8/day avg." },
-    { "year": 2023, "posts": 7400,  "estimated": true,  "note": "~20/day avg. Aug 2023 alone: 1,109 posts." },
-    { "year": 2024, "posts": 8760,  "estimated": true,  "note": "24+/day avg (Roll Call). Jan 2024: 1,364 posts." },
-    { "year": 2025, "posts": 6168,  "estimated": false, "note": "Confirmed full-year count (WCVB/Get the Facts)." },
-    { "year": 2026, "posts": 2700,  "estimated": true,  "note": "2,700+ through ~May 2026 (Financial Times)." }
+    {
+      "year": 2022,
+      "posts": 2800,
+      "estimated": true,
+      "note": "Partial year (launched Feb 21). ~8/day avg."
+    },
+    {
+      "year": 2023,
+      "posts": 7400,
+      "estimated": true,
+      "note": "~20/day avg. Aug 2023 alone: 1,109 posts."
+    },
+    {
+      "year": 2024,
+      "posts": 8760,
+      "estimated": true,
+      "note": "24+/day avg (Roll Call). Jan 2024: 1,364 posts."
+    },
+    {
+      "year": 2025,
+      "posts": 6168,
+      "estimated": false,
+      "note": "Confirmed full-year count (WCVB/Get the Facts).",
+      "partial": false
+    },
+    {
+      "year": 2026,
+      "posts": 2700,
+      "estimated": true,
+      "note": "Through ~May 2026 (Financial Times). Projected ~6,900 at 19/day pace.",
+      "partial": true,
+      "postsAsOf": "2026-05-31",
+      "projectedTotal": 6900
+    }
   ],
   "records": [
     {
       "value": "160+",
       "label": "Most posts in one evening",
       "tag": "Single session",
-      "note": "Dec 1, 2025 — a late-night spree covering Christmas, Michelle Obama, Home Alone 2, and policy attacks."
+      "note": "Dec 1, 2025 \u2014 a late-night spree covering Christmas, Michelle Obama, Home Alone 2, and policy attacks."
     },
     {
       "value": "1,364",
       "label": "Most posts in one month",
       "tag": "Monthly record",
-      "note": "January 2024 — E. Jean Carroll verdict, Iowa caucuses, and relentless campaign posting."
+      "note": "January 2024 \u2014 E. Jean Carroll verdict, Iowa caucuses, and relentless campaign posting."
     },
     {
       "value": "1,153",
       "label": "2nd most in one month",
       "tag": "Runner-up",
-      "note": "August 2024 — second assassination attempt month; posting surged as travel became restricted."
+      "note": "August 2024 \u2014 second assassination attempt month; posting surged as travel became restricted."
     },
     {
       "value": "42",
       "label": "Posts during VP debate",
       "tag": "Live event",
-      "note": "Oct 1, 2024 — posted play-by-play for 90 minutes straight during Vance vs. Walz."
+      "note": "Oct 1, 2024 \u2014 posted play-by-play for 90 minutes straight during Vance vs. Walz."
     }
   ]
 }
