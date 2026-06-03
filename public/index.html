@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRUTH COUNTER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --red: #e8192c;
+      --navy: #0a1628;
+      --cream: #f5f0e8;
+      --gold: #c9a84c;
+      --ink: #1a1a1a;
+      --muted: #6b6660;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* TICKER */
+    .ticker-wrap {
+      background: var(--red);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 6px 0;
+      border-bottom: 3px solid var(--navy);
+    }
+    .ticker-inner {
+      display: inline-block;
+      animation: ticker 32s linear infinite;
+    }
+    .ticker-inner span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: white;
+      padding: 0 40px;
+      text-transform: uppercase;
+    }
+    .ticker-inner span::after { content: '◆'; margin-left: 40px; opacity: 0.5; }
+    @keyframes ticker {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* HEADER */
+    header {
+      background: var(--navy);
+      padding: 28px 40px 22px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      border-bottom: 5px solid var(--red);
+      position: relative;
+      gap: 20px;
+    }
+    header::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px);
+      pointer-events: none;
+    }
+    .header-title h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 7vw, 80px);
+      color: var(--cream);
+      line-height: 0.9;
+      letter-spacing: 0.04em;
+    }
+    .header-title h1 em { color: var(--red); font-style: normal; }
+    .header-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+    .header-right { text-align: right; flex-shrink: 0; }
+    .big-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 8vw, 96px);
+      color: var(--red);
+      line-height: 1;
+      transition: color 0.3s;
+    }
+    .big-num.loading { color: rgba(232,25,44,0.3); }
+    .big-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 6px;
+    }
+    .live-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #4caf50;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .live-dot.stale { background: var(--gold); animation: none; }
+    .live-dot.error { background: var(--red); animation: none; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* MAIN */
+    main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border-top: 2px solid var(--ink);
+      padding-top: 10px;
+      margin-bottom: 20px;
+    }
+
+    /* STATUS BAR */
+    .status-bar {
+      background: var(--navy);
+      color: var(--gold);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .status-bar .err { color: var(--red); }
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .refresh-btn:hover { background: var(--gold); color: var(--navy); }
+    .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* STAT GRID */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 2px;
+      margin-bottom: 48px;
+      border: 2px solid var(--ink);
+    }
+    .stat-card {
+      background: white;
+      padding: 24px 20px;
+      border-right: 2px solid var(--ink);
+      transition: background 0.15s;
+    }
+    .stat-card:last-child { border-right: none; }
+    .stat-card:hover { background: var(--navy); }
+    .stat-card:hover .stat-value { color: var(--cream); }
+    .stat-card:hover .stat-label { color: var(--gold); }
+    .stat-card:hover .stat-context { color: rgba(245,240,232,0.45); }
+    .stat-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(30px, 4vw, 50px);
+      color: var(--ink);
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .stat-value.accent { color: var(--red); }
+    .stat-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+      transition: color 0.15s;
+    }
+    .stat-context {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+      line-height: 1.4;
+      transition: color 0.15s;
+    }
+
+    /* SKELETON */
+    .skeleton {
+      background: linear-gradient(90deg, #e0dbd0 25%, #ccc7bc 50%, #e0dbd0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 2px;
+      height: 1em;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* BAR CHART */
+    .chart-section { margin-bottom: 48px; }
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 200px;
+      margin-bottom: 0;
+    }
+    .bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100%;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+    .bar-count {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .bar-fill {
+      width: 100%;
+      background: var(--navy);
+      position: relative;
+      transition: height 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+    .bar-fill.current-year { background: var(--red); }
+    .bar-fill.estimated { background: var(--navy); opacity: 0.7; }
+    .bar-fill:hover { background: var(--red) !important; opacity: 1 !important; }
+    .bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+    .bar-year {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      color: var(--ink);
+      letter-spacing: 0.04em;
+    }
+    .chart-axis { border-top: 2px solid var(--ink); }
+    .chart-note {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      margin-top: 10px;
+    }
+    .chart-note span { opacity: 0.6; }
+
+    /* RECORDS */
+    .records-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+    .record-card {
+      border: 2px solid var(--ink);
+      padding: 20px;
+      position: relative;
+    }
+    .record-card::before {
+      content: attr(data-tag);
+      position: absolute; top: -1px; right: 16px;
+      background: var(--red); color: white;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 3px 8px;
+    }
+    .record-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px; color: var(--ink); line-height: 1;
+    }
+    .record-desc {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted); margin-top: 4px;
+    }
+    .record-note {
+      font-size: 12px; color: var(--muted);
+      margin-top: 10px; line-height: 1.5;
+      border-top: 1px solid #ddd; padding-top: 10px;
+    }
+
+    /* CONTEXT STRIP */
+    .context-strip {
+      background: var(--navy);
+      border: 2px solid var(--ink);
+      padding: 24px 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 48px;
+    }
+    .context-item .c-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px; color: var(--cream); line-height: 1;
+    }
+    .context-item .c-val span { color: var(--gold); }
+    .context-item .c-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45); margin-top: 5px;
+    }
+
+    footer {
+      text-align: center; padding: 24px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px; letter-spacing: 0.1em;
+      color: var(--muted);
+      border-top: 2px solid var(--ink);
+    }
+
+    /* FADE IN */
+    .fade-up { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .fade-up.visible { opacity: 1; transform: none; }
+
+    @media (max-width: 640px) {
+      header { flex-direction: column; align-items: flex-start; }
+      .header-right { text-align: left; }
+      .records-grid { grid-template-columns: 1fr; }
+      .context-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <div class="ticker-wrap">
+    <div class="ticker-inner">
+      <span v-for="item in tickerItems" :key="item">{{ item }}</span>
+      <span v-for="item in tickerItems" :key="'b-' + item">{{ item }}</span>
+    </div>
+  </div>
+
+  <header>
+    <div class="header-title">
+      <h1>TRUTH<br><em>COUNTER</em></h1>
+      <div class="header-sub">@realDonaldTrump · Truth Social · Feb 2022 — Present</div>
+    </div>
+    <div class="header-right">
+      <div class="big-num" :class="{ loading: loading }">
+        {{ loading ? '——' : stats.total?.toLocaleString() + '+' }}
+      </div>
+      <div class="big-label">Total Posts</div>
+      <div class="live-badge">
+        <div class="live-dot" :class="dotStatus"></div>
+        {{ liveLabel }}
+      </div>
+    </div>
+  </header>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar">
+    <span v-if="error" class="err">⚠ {{ error }}</span>
+    <span v-else-if="stats.fetchedAt">
+      Last synced: {{ timeAgo(stats.fetchedAt) }} &nbsp;·&nbsp;
+      Source: Truth Social Mastodon API &nbsp;·&nbsp;
+      Refreshes every 6 hours
+    </span>
+    <span v-else>Fetching live data...</span>
+    <button class="refresh-btn" :disabled="refreshing" @click="forceRefresh">
+      {{ refreshing ? 'Refreshing…' : '↻ Refresh Now' }}
+    </button>
+  </div>
+
+  <main>
+
+    <!-- AVG STATS -->
+    <div class="section-label">Averages & Rates</div>
+    <div class="stat-grid fade-up" :class="{ visible: shown }">
+      <div class="stat-card" v-for="stat in computedStats" :key="stat.label">
+        <div class="stat-value" :class="{ accent: stat.accent }">
+          <span v-if="loading" class="skeleton" style="width:60%; display:block; height:1.2em;">&nbsp;</span>
+          <template v-else>{{ stat.value }}</template>
+        </div>
+        <div class="stat-label">{{ stat.label }}</div>
+        <div class="stat-context" v-if="stat.context">{{ stat.context }}</div>
+      </div>
+    </div>
+
+    <!-- BAR CHART -->
+    <div class="chart-section fade-up" :class="{ visible: shown }" style="transition-delay:0.1s">
+      <div class="section-label">Posts by Year</div>
+      <div class="bar-chart">
+        <div class="bar-col" v-for="yr in yearData" :key="yr.year">
+          <div class="bar-count">{{ yr.posts.toLocaleString() }}</div>
+          <div
+            class="bar-fill"
+            :class="{
+              'current-year': yr.year === currentYear,
+              'estimated': yr.estimated
+            }"
+            :style="{ height: barHeight(yr.posts) }"
+          ></div>
+          <div class="bar-year">{{ yr.year }}</div>
+        </div>
+      </div>
+      <div class="chart-axis"></div>
+      <div class="chart-note">
+        <span>■</span> Current year (live) &nbsp;&nbsp;
+        <span style="opacity:0.4">■</span> Prior years (estimated from reported averages)
+      </div>
+    </div>
+
+    <!-- RECORDS -->
+    <div class="fade-up" :class="{ visible: shown }" style="transition-delay:0.2s">
+      <div class="section-label">Records & Extremes</div>
+      <div class="records-grid">
+        <div class="record-card" v-for="rec in records" :key="rec.label" :data-tag="rec.tag">
+          <div class="record-num">{{ rec.value }}</div>
+          <div class="record-desc">{{ rec.label }}</div>
+          <div class="record-note">{{ rec.note }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEXT -->
+    <div class="fade-up" :class="{ visible: shown }" style="transition-delay:0.3s">
+      <div class="section-label">Context</div>
+      <div class="context-strip">
+        <div class="context-item" v-for="ctx in contextItems" :key="ctx.label">
+          <div class="c-val" v-html="ctx.value"></div>
+          <div class="c-label">{{ ctx.label }}</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Live data: Truth Social Mastodon-compatible API (statuses_count) ·
+    Historical baselines: Roll Call, Washington Post, AFP, WCVB/Get the Facts ·
+    Per-year breakdown for prior years is estimated from reported daily averages.
+  </footer>
+
+</div>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script>
+const { createApp, ref, computed, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const stats = ref({});
+    const loading = ref(true);
+    const refreshing = ref(false);
+    const error = ref(null);
+    const shown = ref(false);
+    const currentYear = new Date().getFullYear();
+
+    // ── Fetch ─────────────────────────────────────────────────────────────────
+    async function loadStats(force = false) {
+      try {
+        const url = force ? '/api/stats?refresh=true' : '/api/stats';
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        stats.value = data;
+        error.value = null;
+      } catch (e) {
+        error.value = e.message;
+      } finally {
+        loading.value = false;
+        setTimeout(() => { shown.value = true; }, 50);
+      }
+    }
+
+    async function forceRefresh() {
+      refreshing.value = true;
+      await loadStats(true);
+      refreshing.value = false;
+    }
+
+    // ── Computed ──────────────────────────────────────────────────────────────
+    const yearData = computed(() => stats.value.yearData || [
+      { year: 2022, posts: 2800, estimated: true },
+      { year: 2023, posts: 7400, estimated: true },
+      { year: 2024, posts: 8760, estimated: true },
+      { year: currentYear, posts: 0, estimated: false },
+    ]);
+
+    const maxPosts = computed(() => Math.max(...yearData.value.map(y => y.posts), 1));
+    const barHeight = (posts) => `${Math.round((posts / maxPosts.value) * 160)}px`;
+
+    const computedStats = computed(() => {
+      const s = stats.value;
+      if (!s.total) return [
+        { value: '—', label: 'Posts / Day', accent: true },
+        { value: '—', label: 'Posts / Hour' },
+        { value: '—', label: 'Posts / Week' },
+        { value: '—', label: 'Minutes / Post' },
+        { value: '—', label: 'Days Since Launch' },
+        { value: '—', label: 'Avg This Year', accent: true },
+      ];
+
+      const thisYearPosts = yearData.value.find(y => y.year === currentYear)?.posts ?? 0;
+      const dayOfYear = Math.floor((new Date() - new Date(currentYear, 0, 1)) / 86400000);
+      const avgThisYear = dayOfYear > 0 ? (thisYearPosts / dayOfYear).toFixed(1) : '—';
+
+      return [
+        { value: s.avgPerDay?.toFixed(1), label: 'Avg Posts / Day', accent: true, context: 'All-time since Feb 2022' },
+        { value: s.avgPerHour?.toFixed(2), label: 'Avg Posts / Hour', context: 'Around the clock' },
+        { value: s.avgPerWeek?.toLocaleString(), label: 'Avg Posts / Week', context: 'All-time' },
+        { value: s.minutesPerPost, label: 'Minutes Per Post', context: 'On average, day & night' },
+        { value: s.daysSinceLaunch?.toLocaleString(), label: 'Days Since Launch', context: 'Launched Feb 21, 2022' },
+        { value: avgThisYear, label: `Avg / Day ${currentYear}`, accent: true, context: 'Based on live total' },
+      ];
+    });
+
+    // ── Status badge ──────────────────────────────────────────────────────────
+    const dotStatus = computed(() => {
+      if (error.value) return 'error';
+      if (!stats.value.fetchedAt) return 'stale';
+      const age = (Date.now() - new Date(stats.value.fetchedAt)) / 1000 / 60 / 60;
+      return age < 7 ? '' : 'stale';
+    });
+
+    const liveLabel = computed(() => {
+      if (loading.value) return 'Connecting...';
+      if (error.value) return 'Error';
+      return 'Live data';
+    });
+
+    function timeAgo(iso) {
+      const mins = Math.floor((Date.now() - new Date(iso)) / 60000);
+      if (mins < 2) return 'just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      return hrs < 24 ? `${hrs}h ago` : `${Math.floor(hrs / 24)}d ago`;
+    }
+
+    // ── Static data ───────────────────────────────────────────────────────────
+    const tickerItems = computed(() => [
+      `${stats.value.total?.toLocaleString() ?? '25,000'}+ total posts since Feb 2022`,
+      `Avg ${stats.value.avgPerDay ?? 18} posts/day all-time`,
+      'Most active month: Jan 2024 — 1,364 posts',
+      '160+ posts in a single evening (Dec 1, 2025)',
+      '3× his tweet rate from first term',
+      `1 post every ${stats.value.minutesPerPost ?? 80} minutes on average`,
+      'Truth Social: primary White House communication channel',
+    ]);
+
+    const records = [
+      { value: '160+', label: 'Most posts in one evening', tag: 'Single session', note: 'Dec 1, 2025 — a late-night spree covering Christmas, Michelle Obama, Home Alone 2, and policy attacks.' },
+      { value: '1,364', label: 'Most posts in one month', tag: 'Monthly record', note: 'January 2024 — E. Jean Carroll verdict, Iowa caucuses, and relentless campaign posting.' },
+      { value: '1,153', label: '2nd most in one month', tag: 'Runner-up', note: 'August 2024 — second assassination attempt month; posting surged as travel became restricted.' },
+      { value: '42', label: 'Posts during VP debate', tag: 'Live event', note: 'Oct 1, 2024 — posted play-by-play for 90 minutes straight during Vance vs. Walz.' },
+    ];
+
+    const contextItems = [
+      { value: '3<span>×</span>', label: 'his first-term tweet rate (same period)' },
+      { value: '2,262', label: 'posts in first 132 days of 2nd term' },
+      { value: '11.8M', label: 'Truth Social followers (Mar 2026)' },
+    ];
+
+    onMounted(() => loadStats());
+
+    return {
+      stats, loading, refreshing, error, shown,
+      currentYear, yearData, maxPosts, barHeight,
+      computedStats, dotStatus, liveLabel, timeAgo,
+      tickerItems, records, contextItems,
+      forceRefresh,
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
