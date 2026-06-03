@@ -201,8 +201,7 @@
     }
     .bar-fill.estimated { background: #5a6170; opacity: 0.7; }
     .bar-fill.confirmed { background: var(--navy); opacity: 1; }
-    .bar-fill.partial { background: var(--red); opacity: 1; }
-    .bar-fill { width: 100%; }
+    .bar-fill.partial   { background: var(--red); opacity: 1; }
     .bar-fill:hover { background: var(--red) !important; opacity: 1 !important; }
     .bar-fill::after {
       content: '';
@@ -212,40 +211,22 @@
       background: var(--gold);
       opacity: 0.6;
     }
-    /* Projected ghost bar: wrapper is full projected height,
-       real bar sits at bottom via margin-top: auto */
-    .bar-wrap {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      border-radius: 0;
-      overflow: visible;
-    }
-    .bar-wrap.has-projection {
-      background: rgba(232, 25, 44, 0.15);
-    }
     .bar-year {
       font-family: 'Bebas Neue', sans-serif;
       font-size: 18px;
       color: var(--ink);
+      line-height: 1;
     }
-    .bar-ytd {
+    .bar-sub {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8px;
-      letter-spacing: 0.12em;
-      color: var(--red);
-      text-transform: uppercase;
-      margin-top: -2px;
-    }
-    .bar-projected-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 8px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: var(--muted);
-      margin-top: 2px;
+      margin-top: 3px;
+      text-align: center;
       white-space: nowrap;
     }
+    .bar-sub em { color: var(--red); font-style: normal; }
     .chart-axis { border-top: 2px solid var(--ink); }
     .chart-legend {
       font-family: 'IBM Plex Mono', monospace;
@@ -405,30 +386,19 @@
       <div class="section-label">Posts by Year</div>
       <div class="bar-chart">
         <div class="bar-col" v-for="yr in yearData" :key="yr.year">
-          <div class="bar-count">
-            {{ yr.posts.toLocaleString() }}
-            <span v-if="yr.partial" style="color:var(--red);font-size:9px"> YTD</span>
-          </div>
-          <!-- wrapper is sized to projected height so real bar anchors to bottom -->
+          <div class="bar-count">{{ yr.posts.toLocaleString() }}</div>
           <div
-            class="bar-wrap"
-            :class="{ 'has-projection': yr.partial && yr.projectedTotal }"
-            :style="{ height: yr.partial && yr.projectedTotal ? barHeight(yr.projectedTotal) : barHeight(yr.posts) }"
-          >
-            <div
-              class="bar-fill"
-              :class="{
-                estimated: yr.estimated && !yr.partial,
-                confirmed: !yr.estimated && !yr.partial,
-                partial:   yr.partial
-              }"
-              :style="{ height: barHeight(yr.posts) }"
-            ></div>
-          </div>
+            class="bar-fill"
+            :class="{
+              estimated: yr.estimated && !yr.partial,
+              confirmed: !yr.estimated && !yr.partial,
+              partial:   yr.partial
+            }"
+            :style="{ height: barHeight(yr.posts) }"
+          ></div>
           <div class="bar-year">{{ yr.year }}</div>
-          <div class="bar-ytd" v-if="yr.partial">YTD</div>
-          <div class="bar-projected-label" v-if="yr.partial && yr.projectedTotal">
-            ~{{ yr.projectedTotal.toLocaleString() }} projected
+          <div class="bar-sub" v-if="yr.partial">
+            <em>YTD</em> · ~{{ yr.projectedTotal?.toLocaleString() }} proj.
           </div>
         </div>
       </div>
@@ -437,7 +407,6 @@
         <span><span class="legend-dot" style="background:var(--navy)"></span> Confirmed full year</span>
         <span><span class="legend-dot" style="background:#5a6170;opacity:0.7"></span> Estimated from reported averages</span>
         <span><span class="legend-dot" style="background:var(--red)"></span> Year-to-date (partial year)</span>
-        <span><span class="legend-dot" style="background:var(--red);opacity:0.18"></span> Projected full-year pace</span>
       </div>
     </div>
 
@@ -572,7 +541,7 @@ createApp({
     return {
       data, shown, currentYear,
       yearData, records, sources,
-      total, totalFormatted, maxPosts, maxBarHeight, barHeight,
+      total, totalFormatted, maxPosts, barHeight,
       avgStats, tickerItems, contextItems,
     };
   }
