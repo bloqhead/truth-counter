@@ -23,7 +23,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Truth Social is Mastodon-based and exposes a standard Mastodon REST API.
 // The statuses_count field on the account object is the total post count.
 
-const TS_API = 'https://truthsocial.com/api/v1/accounts/lookup?acct=realDonaldTrump';
+// CNN maintains a public archive of Trump's Truth Social posts, updated every 5 minutes.
+// Source: originally built by LA Times data journalist Derek Stiles, now hosted by CNN.
+// No Truth Social involvement — clean third-party JSON.
+const CNN_ARCHIVE_URL = 'https://ix.cnn.io/data/truth-social/truth_archive.json';
 
 // Fallback estimates used only when backfill.json doesn't exist yet
 const ESTIMATED_BASELINES = { 2022: 2800, 2023: 7400, 2024: 8760 };
@@ -89,23 +92,25 @@ function computeStats(liveTotal, yearData) {
 // ─── Fetch from Truth Social API ─────────────────────────────────────────────
 
 async function fetchLiveCount() {
-  console.log('[scraper] Fetching from Truth Social API...');
+  console.log('[scraper] Fetching from CNN Truth Social archive...');
 
-  const response = await axios.get(TS_API, {
+  const response = await axios.get(CNN_ARCHIVE_URL, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (compatible; TruthCounter/1.0)',
       'Accept': 'application/json',
     },
-    timeout: 10000,
+    timeout: 20000,
+    // The archive is a large JSON array — stream efficiently
+    maxContentLength: 100 * 1024 * 1024,
   });
 
-  const account = response.data;
+  const posts = response.data;
 
-  if (!account || typeof account.statuses_count !== 'number') {
-    throw new Error('Unexpected API response shape');
+  if (!Array.isArray(posts) || posts.length === 0) {
+    throw new Error('Unexpected archive format — expected array of posts');
   }
 
-  return account.statuses_count;
+  return posts.length;
 }
 
 // ─── Cache ────────────────────────────────────────────────────────────────────
