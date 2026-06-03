@@ -2,11 +2,12 @@
   "_comment": "Update these numbers periodically. Sources listed below.",
   "updatedAt": "2026-06-03",
   "sources": [
-    "NPR (May 2026): 2,249 posts in first 4 months of 2026, avg 19/day",
+    "Daily Beast (Jun 2, 2026): 861 posts in May 2026 alone, avg 27/day \u2014 new daily rate record",
+    "NPR (May 8, 2026): 2,249 posts in first 4 months of 2026, avg 19/day",
+    "Financial Times (May 2026): 2,700+ posts through ~May 20, avg 19/day",
     "WCVB/Get the Facts: 6,168 posts in full year 2025, avg 18/day",
     "Washington Post (Jun 2025): 2,262 posts in first 132 days of 2nd term",
-    "Roll Call (Oct 2024): 24+ posts/day avg through Oct 2024",
-    "AFP/Malay Mail (Jul 2025): 2,800+ posts Jan-Jul 2025, avg 16/day"
+    "Roll Call (Oct 2024): 24+ posts/day avg through Oct 2024"
   ],
   "launchDate": "2022-02-21",
   "yearData": [
@@ -37,15 +38,21 @@
     },
     {
       "year": 2026,
-      "posts": 2700,
+      "posts": 3110,
       "estimated": true,
-      "note": "Through ~May 2026 (Financial Times). Projected ~6,900 at 19/day pace.",
+      "note": "2,249 thru Apr (NPR) + 861 in May (Daily Beast) = 3,110. May avg 27/day, new record pace.",
       "partial": true,
       "postsAsOf": "2026-05-31",
-      "projectedTotal": 6900
+      "projectedTotal": 8500
     }
   ],
   "records": [
+    {
+      "value": "861",
+      "label": "Most posts in one month (so far)",
+      "tag": "Monthly record?",
+      "note": "May 2026 \u2014 Daily Beast analysis published Jun 2. Avg 27/day. June isn't over yet either."
+    },
     {
       "value": "160+",
       "label": "Most posts in one evening",
@@ -53,16 +60,16 @@
       "note": "Dec 1, 2025 \u2014 a late-night spree covering Christmas, Michelle Obama, Home Alone 2, and policy attacks."
     },
     {
-      "value": "1,364",
-      "label": "Most posts in one month",
-      "tag": "Monthly record",
-      "note": "January 2024 \u2014 E. Jean Carroll verdict, Iowa caucuses, and relentless campaign posting."
+      "value": "55",
+      "label": "Posts in 3 hours",
+      "tag": "Hourly record",
+      "note": "May 11\u201312, 2026 \u2014 55 posts between 10:14 PM and 1 AM. Snopes fact-checked the count."
     },
     {
-      "value": "1,153",
-      "label": "2nd most in one month",
-      "tag": "Runner-up",
-      "note": "August 2024 \u2014 second assassination attempt month; posting surged as travel became restricted."
+      "value": "48",
+      "label": "Posts in 36 minutes",
+      "tag": "Intensity record",
+      "note": "Jan 29, 2026 \u2014 9:23 to 9:59 PM Eastern. Described as 'wild conspiracy theories and ego-boosting posts.'"
     },
     {
       "value": "42",
